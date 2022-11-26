@@ -1,0 +1,15 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /usersData/{userId} {
+      allow read, write: if request.auth.uid !=null;
+    }
+  }
+}
+
+<script src="https://kit.fontawesome.com/cce698c8fc.js"></script>
+
+//do not delete this file
+// firebase deploy --only hosting:royalfragrance
+// firebase deploy --only hosting:edulink-international
+
+allow read, write: if request.resource.data.securedField == resource.data.securedField;

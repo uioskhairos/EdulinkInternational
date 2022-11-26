@@ -1,0 +1,22 @@
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function valid_create() {
+        return !(request.resource.data.keys().hasAny(["status","admin"])) || get(/databases/$(database)/documents/userData/$(request.auth.uid)).data.admin == true;
+    }
+    match /transactions/{documents=**} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && valid_create();
+      allow update: if get(/databases/$(database)/documents/transactions/$(request.auth.uid)).data.admin == true;
+      allow delete: if get(/databases/$(database)/documents/transactions/$(request.auth.uid)).data.admin == true;
+    }
+    match /userData/{documents=**} {
+      allow read: if true;
+      allow create: if request.auth != null && valid_create();
+      allow update: if get(/databases/$(database)/documents/userData/$(request.auth.uid)).data.admin == true;
+      allow delete: if get(/databases/$(database)/documents/transactions/$(request.auth.uid)).data.admin == true;
+    }
+  }
+}
+
+
+".write": "root.child('User').child(auth.uid).child('isAdmin').val() == true"
